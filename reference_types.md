@@ -4,7 +4,7 @@
   1. What is Reference Type?  
   2. Differences between reference and primitive types  
   3. Type Coersion in JS
-  4. Examples  
+  4. Examples on Type Coersion  
   
 ## 1. What is Reference Type?
 
