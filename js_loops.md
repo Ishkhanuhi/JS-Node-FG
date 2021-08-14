@@ -37,7 +37,7 @@ When a `for` loop executes, the following occurs:
    This expression usually initializes one or more loop counters, but the syntax allows an expression of any degree of complexity.  
    This expression may optionally declare new variables with `var` or `let` keywords.  
    Variables declared with `var` are **not** local to the loop, i.e. they are in the same scope the `for` loop is in.  
-   Variables declared with `let` are local to the statement.
+   Variables declared with `let` are local to the statement.  
    **Note:** This step is executed first, and only once and you are not required to put a statement here, as long as a semicolon appears.  
    
 2. The `conditionExpression` expression is evaluated.  
