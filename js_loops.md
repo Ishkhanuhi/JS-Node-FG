@@ -597,3 +597,5 @@ for (const i of iterable) {
   console.log(i); // logs 3, 5, 7
 }
 ```
+# optimization issues, performance issues...
+# switch case without break
