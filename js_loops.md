@@ -70,7 +70,7 @@ When a `for` loop executes, the following occurs:
       // more statements
    }
    ***
-   var i = 0;
+   let i = 0;
    for (;;) {
       if (i > 3) break;
       console.log(i);
