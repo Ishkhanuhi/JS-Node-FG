@@ -220,16 +220,16 @@ for (i = 0; i < 3; i++) {      //The first for statement is labeled "loop1"
 ### Using a labeled block with break
 ```
 foo: {
-  console.log('face');
+  console.log('This line will be executed at first.');
   break foo;
   console.log('this will not be executed');
 }
-console.log('swap');
+console.log('Then this line will be executed.');
 
 // this will log:
 
-// "face"
-// "swap" 
+// 'This line will be executed at first.'
+// 'Then this line will be executed.' 
 ```
 ### Labeled function declarations
 
