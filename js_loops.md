@@ -281,17 +281,17 @@ function testBreak(x) {
 ```
 ### `break` in `switch` statements
 ```
-const food = "sushi";
+const focusGroup = "node";
 
-switch (food) {
-  case "sushi":
-    console.log("Sushi is originally from Japan.");
+switch (focusGroup) {
+  case "node":
+    console.log("Node Focus Group");
     break;
-  case "pizza":
-    console.log("Pizza is originally from Italy.");
+  case "react":
+    console.log("React Focus Group");
     break;
   default:
-    console.log("I have never heard of that dish.");
+    console.log("No such Focus Group");
     break;
 }
 ```
@@ -413,4 +413,187 @@ j = 4
 i: 3
 i = 4
 j = 4
+```
+
+## `for...in` statement
+The `for...in` statement iterates over all enumerable properties of an object that are keyed by strings (ignoring ones keyed by Symbols),  
+including inherited enumerable properties.
+ A `for...in` statement looks as follows:  
+ ```
+ for (variable in object)
+    statement
+ ```
+ - `variable`
+    A different property name is assigned to `variable` on each iteration.
+ - `object`
+    Object whose non-Symbol enumerable properties are iterated over.
+
+A `for...in` loop iterates over the properties of an object in an arbitrary order  
+(this is why one cannot depend on the seeming orderliness of iteration).  
+If a property is modified in one iteration and then visited at a later time, its value in the loop is its value at that later time.  
+A property that is deleted before it has been visited will not be visited later.  
+Properties added to the object over which iteration is occurring may either be visited or omitted from iteration.
+
+In general, it is best not to add, modify, or remove properties from the object during iteration,  
+other than the property currently being visited. There is no guarantee whether an added property will be visited,  
+whether a modified property (other than the current one) will be visited before or after it is modified,  
+or whether a deleted property will be visited before it is deleted.
+
+```
+var obj = {a: 1, b: 2, c: 3};
+
+for (const prop in obj) {
+  console.log(`obj.${prop} = ${obj[prop]}`);
+}
+
+// Output:
+// "obj.a = 1"
+// "obj.b = 2"
+// "obj.c = 3"
+```
+**Note:** `for...in` should not be used to iterate over an Array where the index order is important.  
+Array indexes are just enumerable properties with integer names and are otherwise identical to general object properties.  
+There is no guarantee that `for...in` will return the indexes in any particular order.  
+The `for...in` loop statement will return all enumerable properties, including those with non–integer names and those that are inherited.
+
+Because the order of iteration is implementation-dependent, iterating over an array may not visit elements in a consistent order.  
+Therefore, it is better to use a `for` loop with a numeric index (or `Array.prototype.forEach()` or the `for...of` loop)  
+when iterating over arrays where the order of access is important.  
+
+### Iterating own properties
+```
+var triangle = {a: 1, b: 2, c: 3};
+
+function ColoredTriangle() {
+  this.color = 'red';
+}
+
+ColoredTriangle.prototype = triangle;
+
+var obj = new ColoredTriangle();
+
+for (const prop in obj) {
+  if (obj.hasOwnProperty(prop)) {
+    console.log(`obj.${prop} = ${obj[prop]}`);
+  }
+}
+
+// Output:
+// "obj.color = red"
+```
+
+## `for...of` statement
+The `for...of` statement creates a loop Iterating over iterable objects (including `Array`, `Map`, `Set`, `String`, `arguments` and so on).  
+A `for...of` statement looks as follows:  
+```
+for (variable of iterable) {
+  statement
+}
+```  
+`variable`  
+On each iteration a value of a different property is assigned to `variable`. `variable` may be declared with `const`, `let`, or `var`.  
+`iterable`  
+Object whose iterable properties are iterated.
+
+### Iterating over an Array
+
+```
+const iterable = [10, 20, 30];
+
+for (const value of iterable) {
+  console.log(value);
+}
+// 10
+// 20
+// 30
+```
+### Iterating over a String
+```
+const iterable = 'NODE';
+
+for (const value of iterable) {
+  console.log(value);
+}
+// "N"
+// "O"
+// "D"
+// "E"
+```
+### Iterating over a Map
+```
+const iterable = new Map([['a', 1], ['b', 2], ['c', 3]]);
+
+for (const entry of iterable) {
+  console.log(entry);
+}
+// ['a', 1]
+// ['b', 2]
+// ['c', 3]
+
+for (const [key, value] of iterable) {
+  console.log(value);
+}
+// 1
+// 2
+// 3
+```
+### Iterating over a Set
+```
+const iterable = new Set([1, 1, 2, 2, 3, 3]);
+
+for (const value of iterable) {
+  console.log(value);
+}
+// 1
+// 2
+// 3
+```
+
+### Iterating over the arguments object
+```
+(function() {
+  for (const argument of arguments) {
+    console.log(argument);
+  }
+})(1, 2, 3);
+
+// 1
+// 2
+// 3
+```
+
+## Differences between `for...of` and `for...in`
+Both `for...in` and `for...of` statements iterate over something. The main difference between them is in what they iterate over.  
+The `for...in` statement iterates over the enumerable properties of an object, in an arbitrary order.  
+The `for...of` statement iterates over values that the iterable object defines to be iterated over.
+
+### Comparison
+
+|   |  `for...in` | `for...of`  |
+|---|---|---|
+|  **Applies to** | Enumerable Properties  |  Iterable Collections |
+|  **Use with Objects?** | Yes  |  No |
+| **Use with Arrays?**  |  Yes, but not advised |  Yes |
+|  **Use with Strings?** |  Yes, but not advised |  Yes |
+
+```
+Object.prototype.objCustom = function() {};
+Array.prototype.arrCustom = function() {};
+
+const iterable = [3, 5, 7];
+iterable.foo = 'hello';
+
+for (const i in iterable) {
+  console.log(i); // logs "0", "1", "2", "foo", "arrCustom", "objCustom"
+}
+
+for (const i in iterable) {
+  if (iterable.hasOwnProperty(i)) {
+    console.log(i); // logs "0", "1", "2", "foo"
+  }
+}
+
+for (const i of iterable) {
+  console.log(i); // logs 3, 5, 7
+}
 ```
