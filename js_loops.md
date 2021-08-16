@@ -52,7 +52,31 @@ When a `for` loop executes, the following occurs:
    Generally used to update or increment the counter variable.
 5. Control returns to Step 2.
 
-   
+   ```
+   for (let i = 0; i < 9; ++i) {
+      console.log(i);
+      // more statements
+   }
+   ***
+   let i = 0;
+   for (; i < 9; ++i) {
+      console.log(i);
+      // more statements
+   }
+   ***
+   for (let i = 0;; ++i) {
+      console.log(i);
+      if (i > 3) break;
+      // more statements
+   }
+   ***
+   var i = 0;
+   for (;;) {
+      if (i > 3) break;
+      console.log(i);
+      ++i;
+   }
+   ```
    
 ## `while` statement
    The `while` statement creates a loop that executes a specified statement as long as the test condition evaluates to `true`.  
@@ -75,7 +99,15 @@ When a `for` loop executes, the following occurs:
       The sequence of statements is executed if and only if the `condition` is evaluated to `true`.  
       In case of only one `statement`, the `{...}` (curly braces) can be omitted.  
    
-   
+   ```
+   let n = 0;
+   let x = 0;
+
+   while (n < 3) {
+      ++n;
+      x += n;
+   }
+   ```
    
    
 ## `do...while` statement
@@ -98,7 +130,17 @@ When a `for` loop executes, the following occurs:
     A sequence of statements or a statement that is executed at least once and is re-executed each time the condition evaluates to `true`. In case of only one `statement`, the `{...}` (curly braces) can be omitted.  
 - If `condition` is `true`, the `statement` executes again. At the end of every execution, the condition is checked. When the condition is false, execution stops, and control passes to the statement following do...while.
    
-   
+   ```
+   let result = '';
+   var i = 0;
+   do {
+      i += 1;
+      result += i + ' ';
+   }
+   while (i > 0 && i < 5);
+      // Despite i == 0 this will still loop as it starts off without the test
+      console.log(result);
+   ```
 
 ## Differences between `do...while` and `while` statements
 | **While Loop**  | **Do...while loop**  |
@@ -111,4 +153,264 @@ When a `for` loop executes, the following occurs:
 ## `labeled` statement
 A `label` provides a statement with an identifier that lets you refer to it elsewhere in your program.  
 For example, you can use a `label` to identify a loop, and then use the `break` or `continue` statements  
-to indicate whether a program should interrupt the loop or continue its execution.
+to indicate whether a program should interrupt the loop or continue its execution.  
+
+The syntax of the labeled statement looks like the following:
+```
+label:
+  statement
+```
+- `label`
+   Any JavaScript identifier that is not a reserved word.  
+- `statement`
+   A JavaScript statement. `break` can be used with any labeled statement, and `continue` can be used with looping labeled statements.
+
+**Note:** JavaScript has **NO** `goto` statement, you can only use labels with `break` or `continue`.  
+In strict mode code, you can't use "let" as a label name. It will throw a SyntaxError (let is a reserved identifier).
+
+### Using a labeled continue with for loops
+```
+let i, j;
+
+loop1:
+for (i = 0; i < 3; i++) {      //The first for statement is labeled "loop1"
+   loop2:
+   for (j = 0; j < 3; j++) {   //The second for statement is labeled "loop2"
+      if (i === 1 && j === 1) {
+         continue loop1;
+      }
+      console.log('i = ' + i + ', j = ' + j);
+   }
+}
+
+// Output is:
+//   "i = 0, j = 0"
+//   "i = 0, j = 1"
+//   "i = 0, j = 2"
+//   "i = 1, j = 0"
+//   "i = 2, j = 0"
+//   "i = 2, j = 1"
+//   "i = 2, j = 2"
+// Notice how it skips both "i = 1, j = 1" and "i = 1, j = 2"
+```
+
+### Using a labeled break with for loops
+```
+let i, j;
+
+loop1:
+for (i = 0; i < 3; i++) {      //The first for statement is labeled "loop1"
+   loop2:
+   for (j = 0; j < 3; j++) {   //The second for statement is labeled "loop2"
+      if (i === 1 && j === 1) {
+         break loop1;
+      }
+      console.log('i = ' + i + ', j = ' + j);
+   }
+}
+
+// Output is:
+//   "i = 0, j = 0"
+//   "i = 0, j = 1"
+//   "i = 0, j = 2"
+//   "i = 1, j = 0"
+// Notice the difference with the previous continue example
+```
+
+### Using a labeled block with break
+```
+foo: {
+  console.log('face');
+  break foo;
+  console.log('this will not be executed');
+}
+console.log('swap');
+
+// this will log:
+
+// "face"
+// "swap" 
+```
+### Labeled function declarations
+
+Starting with ECMAScript 2015, labeled function declarations are standardized for non-strict code:
+```
+L: function F() {}
+```
+In strict mode code, however, this will throw a `SyntaxError`:
+```
+'use strict';
+
+L: function F() {}
+// SyntaxError: functions cannot be labelled
+```
+Generator functions can neither be labeled in strict code, nor in non-strict code:
+```
+L: function* F() {}
+// SyntaxError: generator functions cannot be labelled
+```
+
+## `break` statement
+The `break` statement terminates the current loop, `switch`, or `label` statement and transfers program control to the statement following the terminated statement.
+
+The syntax of the break statement looks like this:
+```
+break;
+break [label];
+```
+`label` *Optional*  
+Identifier associated with the label of the statement. If the statement is not a loop or switch, this is required.
+
+1. The first form of the syntax terminates the innermost enclosing loop or switch.
+2. The second form of the syntax terminates the specified enclosing labeled statement.  
+
+### `break` in `while` loop
+```
+function testBreak(x) {
+  var i = 0;
+
+  while (i < 6) {
+    if (i == 3) {
+      break;
+    }
+    i += 1;
+  }
+
+  return i * x;
+}
+```
+### `break` in `switch` statements
+```
+const food = "sushi";
+
+switch (food) {
+  case "sushi":
+    console.log("Sushi is originally from Japan.");
+    break;
+  case "pizza":
+    console.log("Pizza is originally from Italy.");
+    break;
+  default:
+    console.log("I have never heard of that dish.");
+    break;
+}
+```
+
+### `break` in labeled blocks
+```
+outer_block: {
+  inner_block: {
+    console.log('1');
+    break outer_block; // breaks out of both inner_block and outer_block
+    console.log(':-('); // skipped
+  }
+  console.log('2'); // skipped
+}
+```
+
+### `break` in labeled blocks that throw
+The following code also uses `break` statements with labeled blocks, but generates a `SyntaxError`.  
+A `break` statement must always be nested within any label it references.
+
+```
+block_1: {
+  console.log('1');
+  break block_2; // SyntaxError: label not found
+}
+
+block_2: {
+  console.log('2');
+}
+```
+
+### `break` within functions
+```
+function testBreak(x) {
+  var i = 0;
+
+  while (i < 6) {
+    if (i == 3) {
+      (function() {
+        break;
+      })();
+    }
+    i += 1;
+  }
+
+return i * x;
+}
+
+testBreak(1); // SyntaxError: Illegal break statement
+```
+```
+block_1: {
+  console.log('1');
+  ( function() {
+    break block_1; // SyntaxError: Undefined label 'block_1'
+  })();
+}
+```
+
+## `continue` statement
+The `continue` statement terminates execution of the statements in the current iteration of the current or labeled loop,  
+and continues execution of the loop with the next iteration.
+
+The syntax of the `continue` statement looks like this:  
+`continue [label];`
+
+`label` *Optional*  
+Identifier associated with the label of the statement.  
+- When you use `continue` without a `label`, it terminates the current iteration of the innermost enclosing `while`,  
+  `do-while`, or `for` statement and continues execution of the loop with the next iteration.  
+  In contrast to the `break` statement, `continue` does not terminate the execution of the loop entirely.  
+  In a `while` loop, it jumps back to the condition. In a `for` loop, it jumps to the increment-expression.
+- When you use `continue` with a label, it applies to the looping statement identified with that label.
+
+### Using `continue` with a `label`
+```
+let i = 0;
+let j = 8;
+
+check_i_and_j: while (i < 4) {
+  console.log('i: ' + i);
+  i += 1;
+
+  check_j: while (j > 4) {
+    console.log('j: ' + j);
+    j -= 1;
+
+    if ((j % 2) == 0)
+      continue check_j;
+    console.log(j + ' is odd.');
+  }
+  console.log('i = ' + i);
+  console.log('j = ' + j);
+}
+
+//Output:
+i: 0
+
+// start checkj
+j: 8
+7 is odd.
+j: 7
+j: 6
+5 is odd.
+j: 5
+// end checkj
+
+i = 1
+j = 4
+
+i: 1
+i = 2
+j = 4
+
+i: 2
+i = 3
+j = 4
+
+i: 3
+i = 4
+j = 4
+```
