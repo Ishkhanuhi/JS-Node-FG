@@ -57,6 +57,74 @@ and deserve special consideration when managing the memory.
 
 ### Accidental global variables
 
-Global variables are always available from the root and will never get garbage collected.  
-Some mistakes cause variables leak from the local scope into the global scope when in non-strict mode:  
- * assigning value to the undeclared variable,
+Since global variables in JavaScript are referenced by the root node (window or global `this`),  
+they are never garbage collected throughout the lifetime of the application, and will occupy memory as long as the application is running.  
+This applies to any object referenced by the global variables and all their children as well.  
+Having a large graph of objects referenced from the root can lead to a memory leak.
+
+When you assign a value to an undeclared variable, JavaScript automatically hoists it as a global variable in default mode.  
+This could be the result of a typo and could lead to a memory leak.  
+Another way could be when assigning a variable to `this`, which is still a holy grail in JavaScript.  
+```
+function createGlobalVariables() {
+  leaking1 = 'I leak into the global scope'; // assigning value to the undeclared variable
+  this.leaking2 = 'I also leak into the global scope'; // 'this' points to the global object
+};
+createGlobalVariables();
+window.leaking1; // 'I leak into the global scope'
+window.leaking2; // 'I also leak into the global scope'
+```
+
+When you use arrow functions, you also need to be mindful not to create accidental globals, and unfortunately,  
+strict mode will not help with this. You can use the `no-invalid-this` rule from ESLint to avoid such cases.  
+If you are not using ESLint, just make sure not to assign to this from global arrow functions.  
+
+```
+// This will also become a global variable as arrow functions
+// do not have a contextual `this` and instead use a lexical `this`
+const hello = () => {
+    this.foo = 'Message";
+}
+```
+### Use Global Scope Sparingly
+ * As much as possible, don’t use the global scope.  
+   Instead, use local scope inside functions, as those will be garbage collected and memory will be freed.  
+   If you have to use a global variable due to some constraints, set the value to `null` when it’s no longer needed.
+ * Use global variables only for example, constants, cache.  
+   Don’t use global variables for the convenience of avoiding passing values around.  
+   For sharing data between functions and classes, pass the values around as parameters or object attributes.
+ * Don’t store big objects in the global scope. If you have to store them, make sure to nullify them when they are not needed.  
+   For cache objects, set a handler to clean them up once in a while and don’t let them grow indefinitely.
+
+### USE STACK MEMORY EFFECTIVELY
+
+ * Avoid heap object references from stack variables when possible. Also, don’t keep unused variables.
+ * Destructure and use fields needed from an object or array rather than passing around entire objects/arrays to functions,  
+   closures, timers, and event handlers. This avoids keeping a reference to objects inside closures.  
+   The fields passed might mostly be primitives, which will be kept in the stack.
+ ```
+ function outer() {
+    const obj = {
+        foo: 1,
+        bar: "hello",
+    };
+
+    const closure = () {
+        const { foo } = obj;
+        myFunc(foo);
+    }
+}
+
+function myFunc(foo) {}
+```
+### USE HEAP MEMORY EFFECTIVELY
+
+It’s not possible to avoid using heap memory in any realistic application,  
+but we can make them more efficient by following some of these tips:
+
+* Copy objects where possible instead of passing references.
+* Pass a reference only if the object is huge and a copy operation is expensive.
+* Avoid object mutations as much as possible. Instead, use object spread or Object.assign to copy them.
+* Avoid creating multiple references to the same object. Instead, make a copy of the object.
+* Use short-lived variables.
+* Avoid creating huge object trees. If they are unavoidable, try to keep them short-lived in the local scope.
